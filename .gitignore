@@ -1,0 +1,13 @@
+# Do not commit ESPHome secrets, local credentials, generated builds or captured codes.
+secrets.yaml
+**/secrets.yaml
+.esphome/
+**/.esphome/
+.pioenvs/
+.piolibdeps/
+__pycache__/
+*.log
+*.bin
+*.elf
+*.map
+.DS_Store
