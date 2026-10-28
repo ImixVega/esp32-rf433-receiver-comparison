@@ -1,0 +1,402 @@
+# Public reproducible ESPHome benchmark — four 433 MHz DATA receivers.
+# Test code placeholder: replace BOTH decimal and 24-bit binary values.
+# Do not publish your real gate, light or access-control remote codes.
+substitutions:
+  test_code_decimal: "1234567"
+  test_code_binary: "000100101101011010000111"
+
+esphome:
+  name: esp32-rf433-test
+  friendly_name: RF433 Receiver Comparison
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+  level: INFO
+  baud_rate: 0
+
+api:
+  encryption:
+    key: !secret api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# If desired, add manual_ip under wifi in your private config.
+# All receiver GND connections are common.
+# Connect DATA only at ESP32-safe logic levels (<= 3.3 V).
+# Separate modules may have different VCC requirements and pin orders.
+# MX-RM-5V was tested at 3.3 V; that is not a 5 V performance test.
+
+# Same digital decoding configuration for each receiver, no SPI.
+remote_receiver:
+  - id: rf_rx470
+    pin: GPIO25
+    # dump: [rc_switch] # Optional raw decoder logs (can include private codes).
+    tolerance: 50%  # Same permissive setting used in the field trials.
+    filter: 150us
+    idle: 4ms
+    rmt_symbols: 128
+    receive_symbols: 128
+    on_rc_switch:
+      then:
+        - lambda: |-
+            if (x.protocol == 1 && x.code == ${test_code_decimal}ULL) {
+              id(rf_rx470_frames)++;
+            }
+            if (x.code != 0 && x.code != id(rf_rx470_last_code)) {
+              id(rf_rx470_last_code) = x.code;
+              id(rf_rx470_last_text).publish_state(std::to_string(x.code));
+            }
+
+  - id: rf_rx470_sma
+    pin: GPIO32
+    # dump: [rc_switch] # Optional raw decoder logs (can include private codes).
+    tolerance: 50%  # Same permissive setting used in the field trials.
+    filter: 150us
+    idle: 4ms
+    rmt_symbols: 128
+    receive_symbols: 128
+    on_rc_switch:
+      then:
+        - lambda: |-
+            if (x.protocol == 1 && x.code == ${test_code_decimal}ULL) {
+              id(rf_rx470_sma_frames)++;
+            }
+            if (x.code != 0 && x.code != id(rf_rx470_sma_last_code)) {
+              id(rf_rx470_sma_last_code) = x.code;
+              id(rf_rx470_sma_last_text).publish_state(std::to_string(x.code));
+            }
+
+  - id: rf_ak
+    pin: GPIO26
+    # dump: [rc_switch] # Optional raw decoder logs (can include private codes).
+    tolerance: 50%  # Same permissive setting used in the field trials.
+    filter: 150us
+    idle: 4ms
+    rmt_symbols: 128
+    receive_symbols: 128
+    on_rc_switch:
+      then:
+        - lambda: |-
+            if (x.protocol == 1 && x.code == ${test_code_decimal}ULL) {
+              id(rf_ak_frames)++;
+            }
+            if (x.code != 0 && x.code != id(rf_ak_last_code)) {
+              id(rf_ak_last_code) = x.code;
+              id(rf_ak_last_text).publish_state(std::to_string(x.code));
+            }
+
+  - id: rf_mx
+    pin: GPIO27
+    # dump: [rc_switch] # Optional raw decoder logs (can include private codes).
+    tolerance: 50%  # Same permissive setting used in the field trials.
+    filter: 150us
+    idle: 4ms
+    rmt_symbols: 128
+    receive_symbols: 128
+    on_rc_switch:
+      then:
+        - lambda: |-
+            if (x.protocol == 1 && x.code == ${test_code_decimal}ULL) {
+              id(rf_mx_frames)++;
+            }
+            if (x.code != 0 && x.code != id(rf_mx_last_code)) {
+              id(rf_mx_last_code) = x.code;
+              id(rf_mx_last_text).publish_state(std::to_string(x.code));
+            }
+
+# Each button detection groups repeated frames using an 800 ms off-delay.
+# Presses are estimates: long presses and decoder noise can distort counts.
+binary_sensor:
+  - platform: remote_receiver
+    id: rf_rx470_button
+    receiver_id: rf_rx470
+    internal: true
+    rc_switch_raw:
+      protocol: 1
+      code: '${test_code_binary}'
+    filters:
+      - delayed_off: 800ms
+    on_press:
+      then:
+        - lambda: |-
+            id(rf_rx470_hits)++;
+            ESP_LOGI("rf433-test", "RX470C spring: presses=%u", (unsigned)id(rf_rx470_hits));
+
+  - platform: remote_receiver
+    id: rf_rx470_sma_button
+    receiver_id: rf_rx470_sma
+    internal: true
+    rc_switch_raw:
+      protocol: 1
+      code: '${test_code_binary}'
+    filters:
+      - delayed_off: 800ms
+    on_press:
+      then:
+        - lambda: |-
+            id(rf_rx470_sma_hits)++;
+            ESP_LOGI("rf433-test", "RX470C SMA: presses=%u", (unsigned)id(rf_rx470_sma_hits));
+
+  - platform: remote_receiver
+    id: rf_ak_button
+    receiver_id: rf_ak
+    internal: true
+    rc_switch_raw:
+      protocol: 1
+      code: '${test_code_binary}'
+    filters:
+      - delayed_off: 800ms
+    on_press:
+      then:
+        - lambda: |-
+            id(rf_ak_hits)++;
+            ESP_LOGI("rf433-test", "AK-R231101: presses=%u", (unsigned)id(rf_ak_hits));
+
+  - platform: remote_receiver
+    id: rf_mx_button
+    receiver_id: rf_mx
+    internal: true
+    rc_switch_raw:
+      protocol: 1
+      code: '${test_code_binary}'
+    filters:
+      - delayed_off: 800ms
+    on_press:
+      then:
+        - lambda: |-
+            id(rf_mx_hits)++;
+            ESP_LOGI("rf433-test", "MX-RM-5V: presses=%u", (unsigned)id(rf_mx_hits));
+
+  - platform: status
+    name: "RF433 Test - Online"
+    entity_category: diagnostic
+
+globals:
+  - id: rf_rx470_hits
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_rx470_frames
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_rx470_last_code
+    type: uint64_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_rx470_sma_hits
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_rx470_sma_frames
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_rx470_sma_last_code
+    type: uint64_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_ak_hits
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_ak_frames
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_ak_last_code
+    type: uint64_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_mx_hits
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_mx_frames
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: rf_mx_last_code
+    type: uint64_t
+    restore_value: no
+    initial_value: '0'
+
+number:
+  - platform: template
+    name: "RF433 Planned button presses"
+    id: rf_planned_presses
+    entity_category: config
+    icon: mdi:counter
+    optimistic: true
+    restore_value: true
+    initial_value: 50
+    min_value: 1
+    max_value: 500
+    step: 1
+    mode: box
+
+sensor:
+  - platform: template
+    id: rf_rx470_hits_sensor
+    name: "RF433 RX470C spring - Presses"
+    icon: mdi:remote
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: 'return id(rf_rx470_hits);'
+
+  - platform: template
+    name: "RF433 RX470C spring - Matching frames"
+    icon: mdi:counter
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: 'return id(rf_rx470_frames);'
+
+  - platform: template
+    name: "RF433 RX470C spring - Reception percentage"
+    icon: mdi:percent
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    update_interval: 1s
+    lambda: |-
+      const float n = id(rf_planned_presses).state;
+      if (isnan(n) || n < 1) return 0.0f;
+      return 100.0f * id(rf_rx470_hits) / n;
+
+  - platform: template
+    id: rf_rx470_sma_hits_sensor
+    name: "RF433 RX470C SMA - Presses"
+    icon: mdi:remote
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: 'return id(rf_rx470_sma_hits);'
+
+  - platform: template
+    name: "RF433 RX470C SMA - Matching frames"
+    icon: mdi:counter
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: 'return id(rf_rx470_sma_frames);'
+
+  - platform: template
+    name: "RF433 RX470C SMA - Reception percentage"
+    icon: mdi:percent
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    update_interval: 1s
+    lambda: |-
+      const float n = id(rf_planned_presses).state;
+      if (isnan(n) || n < 1) return 0.0f;
+      return 100.0f * id(rf_rx470_sma_hits) / n;
+
+  - platform: template
+    id: rf_ak_hits_sensor
+    name: "RF433 AK-R231101 - Presses"
+    icon: mdi:remote
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: 'return id(rf_ak_hits);'
+
+  - platform: template
+    name: "RF433 AK-R231101 - Matching frames"
+    icon: mdi:counter
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: 'return id(rf_ak_frames);'
+
+  - platform: template
+    name: "RF433 AK-R231101 - Reception percentage"
+    icon: mdi:percent
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    update_interval: 1s
+    lambda: |-
+      const float n = id(rf_planned_presses).state;
+      if (isnan(n) || n < 1) return 0.0f;
+      return 100.0f * id(rf_ak_hits) / n;
+
+  - platform: template
+    id: rf_mx_hits_sensor
+    name: "RF433 MX-RM-5V - Presses"
+    icon: mdi:remote
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: 'return id(rf_mx_hits);'
+
+  - platform: template
+    name: "RF433 MX-RM-5V - Matching frames"
+    icon: mdi:counter
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: 'return id(rf_mx_frames);'
+
+  - platform: template
+    name: "RF433 MX-RM-5V - Reception percentage"
+    icon: mdi:percent
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    update_interval: 1s
+    lambda: |-
+      const float n = id(rf_planned_presses).state;
+      if (isnan(n) || n < 1) return 0.0f;
+      return 100.0f * id(rf_mx_hits) / n;
+
+  - platform: wifi_signal
+    name: "RF433 Test - WiFi RSSI (ESP32 network, NOT RF433)"
+    update_interval: 60s
+    entity_category: diagnostic
+
+text_sensor:
+  - platform: template
+    id: rf_rx470_last_text
+    name: "RF433 RX470C spring - Last decoded code"
+    icon: mdi:radio-tower
+
+  - platform: template
+    id: rf_rx470_sma_last_text
+    name: "RF433 RX470C SMA - Last decoded code"
+    icon: mdi:radio-tower
+
+  - platform: template
+    id: rf_ak_last_text
+    name: "RF433 AK-R231101 - Last decoded code"
+    icon: mdi:radio-tower
+
+  - platform: template
+    id: rf_mx_last_text
+    name: "RF433 MX-RM-5V - Last decoded code"
+    icon: mdi:radio-tower
+
+button:
+  - platform: template
+    name: "RF433 Reset all test counters"
+    entity_category: config
+    icon: mdi:restart
+    on_press:
+      then:
+        - lambda: |-
+            id(rf_rx470_hits) = 0;
+            id(rf_rx470_frames) = 0;
+            id(rf_rx470_sma_hits) = 0;
+            id(rf_rx470_sma_frames) = 0;
+            id(rf_ak_hits) = 0;
+            id(rf_ak_frames) = 0;
+            id(rf_mx_hits) = 0;
+            id(rf_mx_frames) = 0;
+            ESP_LOGI("rf433-test", "All RF433 counters reset");
+        - component.update: rf_rx470_hits_sensor
+        - component.update: rf_rx470_sma_hits_sensor
+        - component.update: rf_ak_hits_sensor
+        - component.update: rf_mx_hits_sensor
+  - platform: restart
+    name: "RF433 Restart ESP32"
+    entity_category: diagnostic
