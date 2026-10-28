@@ -35,7 +35,11 @@ Próby wykonano na czterech odbiornikach podłączonych jednocześnie do **jedne
 | 57 m | 82% | 86% | 74% | 0% |
 | 75 m | 0% | 16% | **60%** | 0% |
 
-**⚠️ Pomiar 10 m nie jest w pełni porównywalny.** Antena AK była wtedy pionowa, a obie anteny RX470C poziome. Zostawiamy go tylko informacyjnie. W pozostałych próbach terenowych anteny ustawiono pionowo. Szczegóły i liczby ramek: [CSV pierwszej serii](results/range_tests.csv).
+**⚠️ Pomiar 10 m nie jest w pełni porównywalny.** Antena AK była wtedy pionowa, a obie anteny RX470C poziome. Zostawiamy go tylko informacyjnie. W pozostałych próbach terenowych anteny ustawiono pionowo. 
+
+![Wykres — seria 1](docs/series-1.svg)
+
+Szczegóły i liczby ramek: [CSV pierwszej serii](results/range_tests.csv).
 
 ## Seria 2 — 25 naciśnięć, drugi kierunek, w stronę ulicy
 
@@ -49,6 +53,8 @@ Przed tą serią MX-RM-5V otrzymał własną sprężynową antenę, ale pozosta�
 | 60 m | 100% | 92% | 88% | 0% |
 | 90 m | 64% | 88% | 96% | 0% |
 | **110 m** | 88% | **100%** | **100%** | 0% |
+
+![Wykres — seria 2](docs/series-2.svg)
 
 [CSV drugiej serii](results/range_tests_series2.csv) | [Ograniczenia pomiarów](results/notes.md)
 
