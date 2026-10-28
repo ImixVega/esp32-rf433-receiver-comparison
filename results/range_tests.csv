@@ -1,0 +1,6 @@
+distance_m,location,antenna_orientation,planned_presses,ak_r231101_presses,ak_r231101_frames,rx470c_sma_presses,rx470c_sma_frames,rx470c_spring_presses,rx470c_spring_frames,mx_rm_5v_presses,mx_rm_5v_frames
+1,desk / indoors,not independently documented,50,50,966,50,776,50,791,12,17
+10,"inside, two walls","NOT COMPARABLE: AK vertical, both RX470C horizontal",50,50,400,23,35,26,39,0,0
+28,outdoor transmitter; receiver indoors,all vertical,50,50,516,32,54,38,69,0,0
+57,outdoor transmitter; receiver indoors,all vertical,50,41,85,43,72,37,60,0,0
+75,outdoor transmitter; receiver indoors,all vertical,50,0,0,8,15,30,59,0,0
