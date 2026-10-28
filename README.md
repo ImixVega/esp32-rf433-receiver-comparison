@@ -29,7 +29,9 @@ The remote used in the experiment was an **8-button, 433 MHz handheld remote wit
 | 57 m | 41/50 (82%) | 43/50 (86%) | 37/50 (74%) | 0/50 |
 | 75 m | 0/50 | 8/50 (16%) | 30/50 (60%) | 0/50 |
 
-⚠️ **The 10 m comparison is NOT controlled:** AK's antenna was vertical while both RX470C antennas were horizontal. Do not use that row to rank receiver performance. At other outdoor positions the antennas were upright. The one-metre desk antenna orientation was not fully documented. See [first-series raw counts](results/range_tests.csv).
+⚠️ **The 10 m comparison is NOT controlled:** AK's antenna was vertical while both RX470C antennas were horizontal. Do not use that row to rank receiver performance. At other outdoor positions the antennas were upright. The one-metre desk antenna orientation was not fully documented. ![Series 1 measured reception](docs/series-1.svg)
+
+See [first-series raw counts](results/range_tests.csv).
 
 ## Second series — 25 intended presses per location, opposite direction toward the street
 
@@ -43,6 +45,8 @@ The remote used in the experiment was an **8-button, 433 MHz handheld remote wit
 | 110 m | 22/25 (88%) | **25/25 (100%)** | **25/25 (100%)** | 0/25 |
 
 For the second series, MX-RM-5V received a dedicated soldered spring antenna, but **still ran at 3.3 V**. Many MX-RM-5V boards are rated for 5 V; therefore, the zero readings **must not be interpreted as a fair comparison with a correctly powered MX-RM-5V**. Its DATA line must be level-shifted or verified before connecting it to a 3.3 V ESP32 input.
+
+![Series 2 measured reception](docs/series-2.svg)
 
 See [second-series raw counts](results/range_tests_series2.csv) and [test limitations](results/notes.md). Never pool the two series into one uniform distance-response curve: directions, sites, press counts and MX antenna conditions changed.
 
