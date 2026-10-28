@@ -1,0 +1,7 @@
+distance_m,series,direction,antenna_orientation,mx_receiver_antenna,mx_supply_v,planned_presses,ak_r231101_presses,ak_r231101_frames,rx470c_sma_presses,rx470c_sma_frames,rx470c_spring_presses,rx470c_spring_frames,mx_rm_5v_presses,mx_rm_5v_frames
+1,series_2_2026-10-28,street / opposite side of building,vertical as preceding test; not independently logged for each position,dedicated soldered antenna,3.3 (user-reported),25,25,116,25,63,22,42,0,0
+10,series_2_2026-10-28,street / opposite side of building,vertical as preceding test; not independently logged for each position,dedicated soldered antenna,3.3 (user-reported),25,25,125,25,78,24,62,0,0
+40,series_2_2026-10-28,street / opposite side of building,vertical as preceding test; not independently logged for each position,dedicated soldered antenna,3.3 (user-reported),25,19,32,14,21,14,20,0,0
+60,series_2_2026-10-28,street / opposite side of building,vertical as preceding test; not independently logged for each position,dedicated soldered antenna,3.3 (user-reported),25,25,48,23,45,22,41,0,0
+90,series_2_2026-10-28,street / opposite side of building,vertical as preceding test; not independently logged for each position,dedicated soldered antenna,3.3 (user-reported),25,16,26,22,62,24,62,0,0
+110,series_2_2026-10-28,street / opposite side of building,vertical as preceding test; not independently logged for each position,dedicated soldered antenna,3.3 (user-reported),25,22,43,25,54,25,51,0,0
